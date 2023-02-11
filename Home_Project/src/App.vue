@@ -1,15 +1,38 @@
 <template>
-  <h1 v-bind="title">{{ title }}</h1>
+  <div>Counter:{{ count }}</div>
+  <button @click="increase(1)">increase1</button>
+  <button @click="decrement(1)">decrement</button> <br />
+  <button @click="increase(2)">increase2</button>
+  <button @click="decrement(2)">decrement2</button>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      title: "well come to vue js",
+      count: 0,
     };
+  },
+  methods: {
+    increase(amount) {
+      this.count = this.count + amount;
+    },
+    decrement(amount) {
+      this.count = this.count - amount;
+    },
   },
 };
 </script>
 
-<style></style>
+<style>
+#title {
+  color: red;
+}
+#name {
+  color: green;
+}
+
+#age {
+  color: yellow;
+}
+</style>
