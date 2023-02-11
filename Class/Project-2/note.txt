@@ -1,0 +1,5 @@
+npm init vue@latest
+sob command no
+cd project Name
+npm install
+npm run dev 
