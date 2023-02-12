@@ -3,3 +3,11 @@ sob command no
 cd project Name
 npm install
 npm run dev 
+
+Router Command
+
+npm install vue-router
+main.js file /import router from "vue-router";
+
+npm install axios;
+news file scripter modde /import axios from 'axios'
