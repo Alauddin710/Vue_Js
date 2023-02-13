@@ -7,15 +7,16 @@
           <input type="text" v-model="searchItem" />
           <button type="submit">Search</button>
         </form>
-        {{ searchItem }}
+        With {{ searchItem }} total {{ searchResult.length }} result Fund
         <hr />
-        <div v-for="post in posts" :key="post.id">
-          <h2>{{ post.product_name }}</h2>
-          <div class="fakeimg">Fake Image</div>
-          <p>
-            {{ post.product_details }}
-          </p>
-        </div>
+        <ol>
+          <li v-for="item in searchResult" :key="item.id">
+            <h2>{{ item.product_name }}</h2>
+            <p>
+              {{ item.product_details }}
+            </p>
+          </li>
+        </ol>
       </div>
     </div>
   </div>
@@ -36,7 +37,8 @@ export default {
         .post("http://127.0.0.1:8000/api/search", { item: this.searchItem })
         .then((response) => {
           // this.posts = response.data;
-          console.log(response.data);
+          this.searchResult = response.data;
+          // console.log(response.data);
         });
     },
   },
