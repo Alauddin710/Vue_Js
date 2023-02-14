@@ -25,12 +25,148 @@
         <hr class="d-sm-none" />
       </div>
       <div class="col-sm-8">
-        <div v-for="post in posts" :key="post.id">
-          <h2>{{ post.product_name }}</h2>
-          <div class="fakeimg">Fake Image</div>
-          <p>
-            {{ post.product_details }}
-          </p>
+        <button
+          @click="
+            formDisplay = true;
+            issubmitButton = true;
+          "
+          class="btn btn-primary"
+        >
+          New Product
+        </button>
+        <div v-if="formDisplay">
+          {{ JSON.stringify(formValues, null, 2) }}
+          <!-- {{ JSON.stringify(formValues, null, 2) }}  atar maddome data check kora jai -->
+          <form name="productForm" v-on:submit.prevent="product_Submit">
+            <div class="col-12">
+              <div class="form-group">
+                <label class="form-label" for="product_name"
+                  >Product Name</label
+                >
+                <div class="form-control-wrap">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="product_name"
+                    formValues.
+                    v-model="formValues.p_name"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label class="form-label" for="product_details"
+                  >Product Details</label
+                >
+                <div class="form-control-wrap">
+                  <textarea
+                    v-model="formValues.p_details"
+                    id="product_details"
+                    cols="30"
+                    rows="6"
+                    class="form-control"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="form-label" for="regular-price">Price</label>
+                <div class="form-control-wrap">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="product_price"
+                    v-model="formValues.p_price"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="form-label" for="product_stock">Stock</label>
+                <div class="form-control-wrap">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="product_stock"
+                    v-model="formValues.p_stock"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label class="form-label" for="category">Category</label>
+                <div class="form-control-wrap">
+                  <select
+                    v-model="formValues.p_cat"
+                    id="product_category"
+                    class="form-control"
+                  >
+                    <option value="">Select one</option>
+                    <option value="1">shirt</option>
+                    <option value="2">pant</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <!-- <div class="upload-zone small bg-lighter my-2"> -->
+              <label class="form-label" for="product_image"
+                >Product Image</label
+              >
+              <input
+                type="file"
+                class="form-control"
+                id="product_image"
+                name="product_image"
+              />
+              <span class="dz-message-text">Drag and drop file</span>
+
+              <!-- </div> -->
+            </div>
+            <div class="col-12" v-if="issubmitButton">
+              <button
+                @click="product_Submit()"
+                type="button"
+                class="btn btn-primary"
+              >
+                Submit
+              </button>
+            </div>
+            <div class="col-12" v-if="isUpdateButton">
+              <button
+                @click="product_update()"
+                type="button"
+                class="btn btn-primary"
+              >
+                Update
+              </button>
+            </div>
+          </form>
+        </div>
+        <div v-if="productList">
+          <div v-for="post in posts" :key="post.id">
+            <h2>{{ post.product_name }}</h2>
+            <div class="fakeimg">Fake Image</div>
+            <p>
+              {{ post.product_details }}
+            </p>
+            <button @click="product_delete(post.id)" class="btn btn-danger">
+              Delete {{ post.id }}
+            </button>
+            <button
+              @click="
+                edit_product(post);
+                isUpdateButton = true;
+              "
+              class="btn btn-info"
+            >
+              Edit
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -42,12 +178,90 @@ export default {
   data() {
     return {
       posts: [],
+      formDisplay: false,
+      // EditformDisplay: false,
+      productList: true,
+      issubmitButton: false,
+      isUpdateButton: false,
+      formValues: {
+        id: null,
+        p_name: "",
+        p_details: "",
+        p_price: "",
+        p_stock: "",
+        p_cat: "",
+      },
     };
   },
   mounted() {
-    axios.get("http://127.0.0.1:8000/api/products").then((response) => {
-      this.posts = response.data;
-    });
+    // get_products() {
+    //   axios.get("http://127.0.0.1:8000/api/products").then((response) => {
+    //     this.posts = response.data;
+    //   });
+    // },
+    this.get_products();
+  },
+  methods: {
+    edit_product(product) {
+      this.formDisplay = true;
+      this.formValues.id = product.id;
+      this.formValues.p_name = product.product_name;
+      this.formValues.p_details = product.product_details;
+      this.formValues.p_price = product.product_price;
+      this.formValues.p_stock = product.product_stock;
+      this.formValues.p_cat = product.product_category;
+      this.productList = false;
+    },
+
+    // delete method
+    product_delete(id) {
+      axios
+        .delete("http://127.0.0.1:8000/api/products/" + id)
+        .then((response) => {
+          this.get_products();
+          alert(response.data.msg);
+        });
+    },
+    // update
+    product_update() {
+      axios
+        .put("http://127.0.0.1:8000/api/products/" + this.formValues.id, {
+          product_name: this.formValues.p_name,
+          product_details: this.formValues.p_details,
+          product_price: this.formValues.p_price,
+          product_stock: this.formValues.p_stock,
+          product_category: this.formValues.p_cat,
+        })
+        .then((response) => {
+          this.get_products();
+          alert(response.data);
+        });
+    },
+    product_Submit() {
+      axios
+        .post("http://127.0.0.1:8000/api/products", {
+          // prod_details: this.formValues,
+          product_name: this.formValues.p_name,
+          product_details: this.formValues.p_details,
+          product_price: this.formValues.p_price,
+          product_stock: this.formValues.p_stock,
+          product_category: this.formValues.p_cat,
+        })
+        .then((response) => {
+          this.formDisplay = false;
+          this.formDisplay = {};
+          this.get_products();
+          alert(response.data);
+        })
+        .catch((error) => {
+          console.log(error.response.data.errors);
+        });
+    },
+    get_products() {
+      axios.get("http://127.0.0.1:8000/api/products").then((response) => {
+        this.posts = response.data;
+      });
+    },
   },
 };
 </script>
