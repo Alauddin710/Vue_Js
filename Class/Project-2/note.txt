@@ -11,3 +11,7 @@ main.js file /import router from "vue-router";
 
 npm install axios;
 news file scripter modde /import axios from 'axios'
+
+
+*****18/02/2023
+npm install vuex@next --save //
